@@ -8,7 +8,8 @@ Last updated: 25 Nov 2026
 - All four parts of the brief work on the scripted path: board with pencil and ink, unfold to three trails, ink check with paste fade and stamp, trace threads.
 - The ink check is scripted in `src/pangram.ts`. No Pangram call is made. Alex chose this on 25 Nov 2026 so that takes are deterministic.
 - All content comes from `src/demo.json`. Ink, the phrase, the journal entry, the song and the first steps are `REPLACE:` placeholders. Pencil guesses, trail names (Strength, Outdoors, Writing) and need chips are drafted.
-- `public/cards/1.jpg` to `5.jpg` are flat illustrated placeholders.
+- Restyled on 25 Nov 2026 after Alex's feedback that the scrapbook look was too cartoony: now a product-style canvas (app bar, pins, music tile, sticky note, journal card, UI chips and task cards) with pixel-art accents (Pixelify Sans labels, pixel icons). Pencil and ink stay in Caveat.
+- `public/cards/1.jpg` to `5.jpg` and `sleeve.jpg` are real photos from Unsplash (Unsplash Licence). Credits are in `public/cards/CREDITS.md`.
 
 ## In progress
 
@@ -16,10 +17,10 @@ Last updated: 25 Nov 2026
 
 ## Waiting on Alex
 
-- Replace the five photos and every `REPLACE:` line in `src/demo.json`.
+- Replace every `REPLACE:` line in `src/demo.json`, and swap in his own photos if he prefers them to the Unsplash ones.
 - Check real ink of two or three lines under each card still sits clear of the cards below it, and nudge `board` positions if not.
 
 ## Not built
 
-- Sounds and a "Back to board" control (left out of the brief; reload resets the demo).
+- Sounds (left out of the brief).
 - A real Pangram proxy.

@@ -21,7 +21,7 @@
       "label": "someone skiing",
       "board": {
         "x": 596,
-        "y": 112,
+        "y": 98,
         "rotate": 1.5
       },
       "trail": 1,
@@ -90,7 +90,7 @@
       "text": "REPLACE: a goal in a few words",
       "board": {
         "x": 500,
-        "y": 478,
+        "y": 486,
         "rotate": -1
       },
       "trail": 2,

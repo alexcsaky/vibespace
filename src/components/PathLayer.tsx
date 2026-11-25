@@ -179,11 +179,11 @@ function Trail({ t, trail }: { t: number; trail: TrailData }) {
             <span style={{ width: 6, height: 6, background: accent }} />
             Trail {t + 1}
           </div>
-          <div className="ink whitespace-nowrap font-bold" style={{ fontSize: 44, lineHeight: '40px', marginTop: 2 }}>
+          <div className="ink whitespace-nowrap font-bold" style={{ fontSize: 44, lineHeight: '40px', marginTop: 1 }}>
             {trail.name}
           </div>
         </motion.div>
-        <div className="mt-[7px] flex items-center justify-center gap-[3px]">
+        <div className="mt-[9px] flex items-center justify-center gap-[3px]">
           <motion.span
             className="block"
             style={{ width: 40, height: 3, background: accent, transformOrigin: '0 50%' }}
@@ -300,12 +300,12 @@ function Trail({ t, trail }: { t: number; trail: TrailData }) {
                 </span>
                 <motion.span
                   className="label flex items-center gap-[5px]"
-                  style={{ fontSize: 10 }}
+                  style={{ fontSize: 11 }}
                   initial={false}
                   animate={{ color: traced ? TERRACOTTA_DARK : PENCIL }}
                   transition={{ duration: 0.25 }}
                 >
-                  {traced ? 'Tracing' : 'Trace'}
+                  Thread
                   <PixelIcon name="arrow" size={9} className="-rotate-90" />
                 </motion.span>
               </div>

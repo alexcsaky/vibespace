@@ -195,10 +195,6 @@ export default function App() {
                 <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
                 <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" />
               </filter>
-              <filter id="thread-rough" x="-10%" y="-10%" width="120%" height="120%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n" />
-                <feDisplacementMap in="SourceGraphic" in2="n" scale="5" />
-              </filter>
             </defs>
           </svg>
 

@@ -32,17 +32,17 @@ function box(card: CardData) {
   return { left: s.x, right: s.x + size.w * s.scale, top: s.y, bottom: s.y + size.h * s.scale }
 }
 
-/** Smooth curve through the points (Catmull-Rom, as cubic Béziers). */
-function spline(pts: P[], k = 1) {
+/** Smooth curve segments through the points (Catmull-Rom, as cubic Béziers), from point `from` on. */
+function spline(pts: P[], from = 0) {
   const f = (n: number) => n.toFixed(1)
-  let d = `M ${f(pts[0].x)} ${f(pts[0].y)}`
-  for (let i = 0; i < pts.length - 1; i++) {
+  let d = ''
+  for (let i = from; i < pts.length - 1; i++) {
     const p0 = pts[i - 1] ?? pts[i]
     const p1 = pts[i]
     const p2 = pts[i + 1]
     const p3 = pts[i + 2] ?? p2
-    const c1 = { x: p1.x + ((p2.x - p0.x) / 6) * k, y: p1.y + ((p2.y - p0.y) / 6) * k }
-    const c2 = { x: p2.x - ((p3.x - p1.x) / 6) * k, y: p2.y - ((p3.y - p1.y) / 6) * k }
+    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 }
+    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 }
     d += ` C ${f(c1.x)} ${f(c1.y)}, ${f(c2.x)} ${f(c2.y)}, ${f(p2.x)} ${f(p2.y)}`
   }
   return d
@@ -64,12 +64,8 @@ function buildThreads(t: number): Thread[] {
   const cards = cardsInTrail(t)
   const tx = TRAIL_X[t]
   const start = port(t)
-  // dead straight up the gap, so every thread shares one clean line
-  const trunk: P[] = [
-    { x: start.x, y: start.y },
-    { x: tx, y: CHIP.top + CHIP.h * 1.6 },
-    { x: tx, y: CHIP.top + CHIP.h * 0.55 },
-  ]
+  // dead straight up the gap between the chips: every thread shares this one line, then they fork
+  const fork = { x: tx, y: CHIP.top - 2 }
 
   return cards.map((card) => {
     const b = box(card)
@@ -83,10 +79,10 @@ function buildThreads(t: number): Thread[] {
       .find((o) => o.left < tx - 12 && o.right > tx + 12 && o.bottom > b.bottom)
     // handle towards the corner nearest the centre gap, or mid-edge for a card sitting across it
     const u = across ? 0.5 + ((tx - mid) / (b.right - b.left)) * 0.6 : inWay ? 0.5 : side < 0 ? 0.74 : 0.26
-    const end = facePoint(card, u, 0.955)
-    const leave = { x: tx + (end.x - tx) * 0.04, y: CHIP.top - 2 }
-    const dy = leave.y - end.y
-    const pts: P[] = [...trunk, leave]
+    const end = facePoint(card, u, 1)
+    const dy = fork.y - end.y
+    // the first point only sets the direction the curve leaves the fork in: straight up
+    const pts: P[] = [{ x: tx, y: fork.y + 90 }, fork]
     if (inWay) {
       // swing out beside the card in the way, so the thread stays in view
       const out = side < 0 ? inWay.left - 15 : inWay.right + 24
@@ -94,11 +90,13 @@ function buildThreads(t: number): Thread[] {
       pts.push({ x: out + side * 3, y: inWay.bottom - h * 0.12 })
       pts.push({ x: out, y: inWay.top + h * 0.3 })
     } else {
-      pts.push({ x: tx + (end.x - tx) * 0.2 - side * 6, y: leave.y - dy * 0.36 })
-      pts.push({ x: tx + (end.x - tx) * 0.78 + side * 7, y: leave.y - dy * 0.74 })
+      pts.push({ x: tx + (end.x - tx) * 0.2 - side * 6, y: fork.y - dy * 0.36 })
+      pts.push({ x: tx + (end.x - tx) * 0.78 + side * 7, y: fork.y - dy * 0.74 })
     }
     pts.push(end)
-    return { id: card.id, d: spline(pts), end }
+    const f = (n: number) => n.toFixed(1)
+    const d = `M ${f(start.x)} ${f(start.y)} L ${f(fork.x)} ${f(fork.y)}${spline(pts, 1)}`
+    return { id: card.id, d, end }
   })
 }
 

@@ -5,7 +5,11 @@
       "type": "photo",
       "src": "/cards/1.jpg",
       "label": "someone strong",
-      "board": { "x": 84, "y": 104, "rotate": -4 },
+      "board": {
+        "x": 84,
+        "y": 118,
+        "rotate": -2
+      },
       "trail": 0,
       "pencilGuess": "Is this about looking strong, or about feeling capable?",
       "ink": "REPLACE: why the strong photo is here"
@@ -15,7 +19,11 @@
       "type": "photo",
       "src": "/cards/2.jpg",
       "label": "someone skiing",
-      "board": { "x": 596, "y": 100, "rotate": 2 },
+      "board": {
+        "x": 596,
+        "y": 112,
+        "rotate": 1.5
+      },
       "trail": 1,
       "pencilGuess": "Is this about speed, or about cold quiet days with friends?",
       "ink": ""
@@ -25,7 +33,11 @@
       "type": "photo",
       "src": "/cards/3.jpg",
       "label": "someone in nature",
-      "board": { "x": 190, "y": 476, "rotate": 3 },
+      "board": {
+        "x": 190,
+        "y": 484,
+        "rotate": 1.5
+      },
       "trail": 1,
       "pencilGuess": "Is this about getting away, or about paying attention?",
       "ink": "REPLACE: why the nature photo is here"
@@ -35,7 +47,11 @@
       "type": "photo",
       "src": "/cards/4.jpg",
       "label": "spare photo",
-      "board": { "x": 846, "y": 70, "rotate": -3 },
+      "board": {
+        "x": 846,
+        "y": 88,
+        "rotate": -1.5
+      },
       "trail": 0,
       "pencilGuess": "Is this about the place, or about who was there with you?",
       "ink": "REPLACE: why spare photo 4 is here"
@@ -45,7 +61,11 @@
       "type": "photo",
       "src": "/cards/5.jpg",
       "label": "spare photo",
-      "board": { "x": 822, "y": 468, "rotate": -5 },
+      "board": {
+        "x": 822,
+        "y": 476,
+        "rotate": -2.5
+      },
       "trail": 1,
       "pencilGuess": "Is this something you want more of, or something you miss?",
       "ink": "REPLACE: why spare photo 5 is here"
@@ -55,7 +75,11 @@
       "type": "song",
       "text": "REPLACE: Song title",
       "artist": "REPLACE: Artist",
-      "board": { "x": 356, "y": 74, "rotate": 3 },
+      "board": {
+        "x": 356,
+        "y": 92,
+        "rotate": 2
+      },
       "trail": 0,
       "pencilGuess": "Is this how you want next year to sound?",
       "ink": "REPLACE: why this song is here"
@@ -64,7 +88,11 @@
       "id": "c7",
       "type": "phrase",
       "text": "REPLACE: a goal in a few words",
-      "board": { "x": 500, "y": 470, "rotate": -2 },
+      "board": {
+        "x": 500,
+        "y": 478,
+        "rotate": -1
+      },
       "trail": 2,
       "pencilGuess": "What would done look like for this by June?",
       "ink": ""
@@ -73,7 +101,11 @@
       "id": "c8",
       "type": "journal",
       "text": "REPLACE: journal entry, about 80 words. Write it yourself, this is the most personal thing on the board and it is what the ink check reads. Say what this year felt like, what you kept putting off, and the one thing you would be sad to still be saying next November. Keep the sentences the way you would actually write them in a notebook, short ones and long ones, with a line you might cross out later. End on something you believe.",
-      "board": { "x": 1090, "y": 84, "rotate": 2.5 },
+      "board": {
+        "x": 1090,
+        "y": 98,
+        "rotate": 1.5
+      },
       "trail": 2,
       "pencilGuess": "Which line here will you still agree with in June?",
       "ink": "REPLACE: the line I will still agree with in June"
@@ -83,30 +115,66 @@
     {
       "name": "Strength",
       "needs": [
-        { "kind": "time", "text": "Three mornings a week, 45 minutes" },
-        { "kind": "money", "text": "One gym membership, nothing fancy" },
-        { "kind": "people", "text": "Someone to train with on hard days" },
-        { "kind": "skills", "text": "Learning to lift with good form" }
+        {
+          "kind": "time",
+          "text": "Three mornings a week, 45 minutes"
+        },
+        {
+          "kind": "money",
+          "text": "One gym membership, nothing fancy"
+        },
+        {
+          "kind": "people",
+          "text": "Someone to train with on hard days"
+        },
+        {
+          "kind": "skills",
+          "text": "Learning to lift with good form"
+        }
       ],
       "firstStep": "REPLACE: first step for strength"
     },
     {
       "name": "Outdoors",
       "needs": [
-        { "kind": "time", "text": "One full weekend a month, phone off" },
-        { "kind": "money", "text": "Lift passes and second-hand skis" },
-        { "kind": "people", "text": "Two friends who say yes to early starts" },
-        { "kind": "skills", "text": "Reading a mountain forecast" }
+        {
+          "kind": "time",
+          "text": "One full weekend a month, phone off"
+        },
+        {
+          "kind": "money",
+          "text": "Lift passes and second-hand skis"
+        },
+        {
+          "kind": "people",
+          "text": "Two friends who say yes to early starts"
+        },
+        {
+          "kind": "skills",
+          "text": "Reading a mountain forecast"
+        }
       ],
       "firstStep": "REPLACE: first step for outdoors"
     },
     {
       "name": "Writing",
       "needs": [
-        { "kind": "time", "text": "Thirty quiet minutes before work" },
-        { "kind": "money", "text": "A notebook and not much else" },
-        { "kind": "people", "text": "One honest reader" },
-        { "kind": "skills", "text": "Finishing drafts before fixing them" }
+        {
+          "kind": "time",
+          "text": "Thirty quiet minutes before work"
+        },
+        {
+          "kind": "money",
+          "text": "A notebook and not much else"
+        },
+        {
+          "kind": "people",
+          "text": "One honest reader"
+        },
+        {
+          "kind": "skills",
+          "text": "Finishing drafts before fixing them"
+        }
       ],
       "firstStep": "REPLACE: first step for writing"
     }

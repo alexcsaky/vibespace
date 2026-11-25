@@ -10,6 +10,8 @@ import type { CardData, CardType, DemoData } from './types'
 export const demo = demoJson as DemoData
 
 export const CANVAS = { w: 1440, h: 900 }
+/** Height of the app bar across the top of the canvas. */
+export const TOPBAR_H = 52
 
 /** Size of the card face (the print itself), before any scaling. */
 export const CARD_SIZE: Record<CardType, { w: number; h: number }> = {
@@ -27,9 +29,9 @@ export const LINE_EXTRA_W = 24
 export const PATH_SCALE = 0.6
 export const TRAIL_X = [250, 720, 1190] // centre x of each trail column
 export const TRAIL_W = 400
-export const TRAIL_NAME_Y = 30 // top of the trail name
-export const CHIP = { w: 184, h: 68, gapX: 16, gapY: 12, top: 520 }
-export const STEP = { w: 380, h: 96, top: 708 }
+export const TRAIL_NAME_Y = 64 // top of the trail name
+export const CHIP = { w: 184, h: 68, gapX: 16, gapY: 12, top: 548 }
+export const STEP = { w: 380, h: 92, top: 728 }
 
 export interface Slot {
   x: number
@@ -42,13 +44,13 @@ export interface Slot {
 const SLOT_PATTERNS: Record<number, { dx: number; y: number; rotate: number }[]> = {
   1: [{ dx: -70, y: 130, rotate: -2 }],
   2: [
-    { dx: -178, y: 124, rotate: -2.5 },
-    { dx: 52, y: 232, rotate: 3 },
+    { dx: -178, y: 152, rotate: -1.5 },
+    { dx: 52, y: 260, rotate: 2 },
   ],
   3: [
-    { dx: -198, y: 112, rotate: -4 },
-    { dx: 46, y: 100, rotate: 3.5 },
-    { dx: -62, y: 324, rotate: -1.5 },
+    { dx: -198, y: 142, rotate: -2 },
+    { dx: 46, y: 132, rotate: 2 },
+    { dx: -62, y: 352, rotate: -1 },
   ],
 }
 

@@ -4,8 +4,18 @@ import { CardFace } from './components/Card'
 import { InkCheck } from './components/InkCheck'
 import { InkLine } from './components/InkLine'
 import { PathLayer } from './components/PathLayer'
+import { PixelIcon } from './components/Pixel'
 import { TraceLayer } from './components/TraceLayer'
-import { CANVAS, CARD_SIZE, demo, LINE_EXTRA_W, LINE_GAP, PATH_SLOTS, UNFOLD_ORDER } from './layout'
+import {
+  CANVAS,
+  CARD_SIZE,
+  demo,
+  LINE_EXTRA_W,
+  LINE_GAP,
+  PATH_SLOTS,
+  TOPBAR_H,
+  UNFOLD_ORDER,
+} from './layout'
 import { useDemo } from './store'
 import type { CardData } from './types'
 
@@ -87,6 +97,67 @@ function CardUnit({ card, z }: { card: CardData; z: number }) {
   )
 }
 
+/** The app bar: wordmark, board name, Board / Path switch, and the pencil and ink key. */
+function TopBar() {
+  const { state, act } = useDemo()
+  const inPath = state.phase === 'path'
+  const tabs = [
+    { id: 'board', label: 'Board', on: !inPath, go: act.backToBoard },
+    { id: 'path', label: 'Path', on: inPath, go: act.unfold },
+  ]
+  return (
+    <div
+      className="absolute inset-x-0 top-0 z-[90] flex items-center border-b-[1.5px] border-line bg-card px-5"
+      style={{ height: TOPBAR_H }}
+    >
+      <div className="flex items-center gap-2.5 text-ink">
+        <PixelIcon name="logo" size={27} color="#D98B6A" />
+        <span className="font-pixel text-[23px] font-semibold leading-none tracking-wide">Someday</span>
+      </div>
+      <span className="mx-4 h-5 w-[1.5px] bg-line" />
+      <span className="font-ui text-[14px] font-bold text-ink/70">Next year</span>
+
+      {/* Board / Path */}
+      <div
+        className="absolute left-1/2 flex -translate-x-1/2 gap-1 rounded-[11px] border-[1.5px] border-line bg-paper p-[3px]"
+      >
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={t.on ? undefined : t.go}
+            className="relative h-[28px] w-[84px] cursor-pointer font-pixel text-[15px] font-medium tracking-wide"
+          >
+            {t.on && (
+              <motion.span
+                layoutId="tab"
+                className="absolute inset-0 rounded-[8px] bg-ink"
+                transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+              />
+            )}
+            <span className={`relative ${t.on ? 'text-paper' : 'text-ink/60'}`}>{t.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* The one rule of the product, as a key. */}
+      <div className="absolute right-[250px] flex items-center gap-4 font-ui text-[12.5px] font-bold">
+        <span className="flex items-center gap-1.5 text-pencil">
+          <PixelIcon name="pencil" size={18} />
+          Pencil is a guess
+        </span>
+        <span className="flex items-center gap-1.5 text-ink">
+          <PixelIcon name="drop" size={18} />
+          Ink is yours
+        </span>
+      </div>
+
+      <div className="absolute right-5 flex h-8 w-8 items-center justify-center rounded-full bg-sage font-pixel text-[15px] font-semibold text-ink">
+        A
+      </div>
+    </div>
+  )
+}
+
 /** Fit the fixed canvas into the window, never scaling above 1. */
 function useFit() {
   const [scale, setScale] = useState(1)
@@ -131,22 +202,7 @@ export default function App() {
             </defs>
           </svg>
 
-          <motion.div
-            className="ink absolute left-10 top-5 select-none text-[34px] font-semibold leading-none"
-            animate={{ opacity: inPath ? 0 : 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            Someday
-            <svg width="96" height="8" viewBox="0 0 96 8" className="mt-0.5 block">
-              <path
-                d="M2 5 C 20 1, 38 7, 56 3 S 86 5, 94 3"
-                fill="none"
-                stroke="#A8B89A"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
-          </motion.div>
+          <TopBar />
 
           <PathLayer />
 
@@ -162,19 +218,16 @@ export default function App() {
               <motion.button
                 key="unfold"
                 onClick={act.unfold}
-                className="absolute left-1/2 top-[822px] cursor-pointer bg-terracotta px-8 py-3 font-ui text-[17px] font-extrabold tracking-wide text-paper"
-                style={{
-                  x: '-50%',
-                  borderRadius: '26px 30px 24px 32px / 30px 24px 32px 26px',
-                  boxShadow: '0 2px 0 #b9704f, 0 10px 18px -8px rgba(120, 70, 40, 0.45)',
-                }}
+                className="btn btn-primary absolute left-1/2 top-[826px] z-[70]"
+                style={{ x: '-50%' }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 14, transition: { duration: 0.25 } }}
                 whileHover={{ y: -2 }}
-                whileTap={{ y: 1, scale: 0.98 }}
+                whileTap={{ y: 2, boxShadow: '0 0px 0 #b9704f, 0 6px 12px -10px rgba(120,70,40,0.5)' }}
               >
                 Show me the way
+                <PixelIcon name="arrow" size={18} />
               </motion.button>
             )}
           </AnimatePresence>

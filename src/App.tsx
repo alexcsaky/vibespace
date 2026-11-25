@@ -52,7 +52,8 @@ function CardUnit({ card, z }: { card: CardData; z: number }) {
         height: size.h,
         originX: 0,
         originY: 0,
-        zIndex: traced ? 60 + z : active && !inPath ? 40 : z,
+        // Traced cards sit above the threads (z 55); upper slots on top so their enlarged lines stay readable.
+        zIndex: traced ? 75 - order : active && !inPath ? 40 : z,
       }}
       initial={false}
       animate={{

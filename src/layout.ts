@@ -28,8 +28,8 @@ export const PATH_SCALE = 0.6
 export const TRAIL_X = [250, 720, 1190] // centre x of each trail column
 export const TRAIL_W = 400
 export const TRAIL_NAME_Y = 30 // top of the trail name
-export const CHIP = { w: 184, h: 68, gapX: 16, gapY: 12, top: 500 }
-export const STEP = { w: 380, h: 96, top: 692 }
+export const CHIP = { w: 184, h: 68, gapX: 16, gapY: 12, top: 520 }
+export const STEP = { w: 380, h: 96, top: 708 }
 
 export interface Slot {
   x: number
@@ -42,13 +42,13 @@ export interface Slot {
 const SLOT_PATTERNS: Record<number, { dx: number; y: number; rotate: number }[]> = {
   1: [{ dx: -70, y: 130, rotate: -2 }],
   2: [
-    { dx: -178, y: 128, rotate: -2.5 },
-    { dx: 30, y: 246, rotate: 3 },
+    { dx: -178, y: 124, rotate: -2.5 },
+    { dx: 52, y: 232, rotate: 3 },
   ],
   3: [
-    { dx: -186, y: 122, rotate: -4 },
-    { dx: 34, y: 108, rotate: 3.5 },
-    { dx: -44, y: 306, rotate: -1.5 },
+    { dx: -198, y: 112, rotate: -4 },
+    { dx: 46, y: 100, rotate: 3.5 },
+    { dx: -62, y: 324, rotate: -1.5 },
   ],
 }
 

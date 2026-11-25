@@ -15,7 +15,7 @@
       "type": "photo",
       "src": "/cards/2.jpg",
       "label": "someone skiing",
-      "board": { "x": 596, "y": 118, "rotate": 2 },
+      "board": { "x": 596, "y": 100, "rotate": 2 },
       "trail": 1,
       "pencilGuess": "Is this about speed, or about cold quiet days with friends?",
       "ink": ""

@@ -34,6 +34,8 @@ const FLOOD_TIME = 0.9 // ink floods through, left to right
 const DRAIN_TIME = 1.2 // borrowed ink drains back to pencil, right to left
 const HOLD = 0.35 // ink rests before it starts to drain
 
+/** How much a card's ink line grows while its trail is being traced. */
+const ENLARGE = 1.45
 const LONG_WORDS = 24
 const LONG_W = 336
 
@@ -675,7 +677,7 @@ export function InkLine({ card, enlarged }: { card: CardData; enlarged: boolean 
   return (
     <motion.div
       initial={false}
-      animate={{ scale: enlarged ? 1.7 : 1 }}
+      animate={{ scale: enlarged ? ENLARGE : 1 }}
       transition={{ type: 'spring', stiffness: 210, damping: 20 }}
       style={{
         transformOrigin: '50% 0%',

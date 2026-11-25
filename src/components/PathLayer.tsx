@@ -253,41 +253,34 @@ function Trail({ t, trail }: { t: number; trail: TrailData }) {
           transition={{ duration: 0.6, delay: STEP_AT(t), ease: EASE }}
         >
           <motion.div
-            className="surface relative flex h-full w-full cursor-pointer select-none items-center gap-[14px] pl-[16px] pr-[18px]"
-            style={{ borderRadius: 12 }}
+            className="relative h-full w-full cursor-pointer select-none"
             initial={false}
-            animate={{
-              y: 0,
-              borderColor: traced ? TERRACOTTA : LINE,
-              boxShadow: traced
-                ? `0 2px 0 ${TERRACOTTA_DARK}, 0 14px 24px -14px rgba(120, 70, 40, 0.5)`
-                : '0 2px 0 rgba(31, 42, 68, 0.1), 0 12px 24px -14px rgba(60, 40, 20, 0.35)',
-            }}
-            whileHover={
-              traced
-                ? undefined
-                : {
-                    y: -2,
-                    borderColor: LINE_HOVER,
-                    boxShadow: '0 4px 0 rgba(31, 42, 68, 0.14), 0 16px 26px -14px rgba(60, 40, 20, 0.42)',
-                  }
-            }
-            whileTap={traced ? undefined : { y: 0 }}
+            animate={traced ? 'traced' : 'rest'}
+            whileHover={traced ? undefined : 'hover'}
+            whileTap={traced ? undefined : 'rest'}
+            variants={{ rest: { y: 0 }, traced: { y: 0 }, hover: { y: -2 } }}
             transition={{ duration: 0.16, ease: 'easeOut' }}
             onClick={() => act.toggleTrace(t)}
           >
-            {/* the port the thread plugs in to */}
-            <span
-              className="absolute"
-              style={{
-                left: STEP.w / 2 - 1.5 - 4,
-                top: -1.5 - 4,
-                width: 8,
-                height: 8,
-                background: CARD,
-                border: '1.5px solid rgba(31, 42, 68, 0.32)',
-              }}
-            />
+          <motion.div
+            className="surface flex h-full w-full items-center gap-[14px] pl-[16px] pr-[18px]"
+            style={{ borderRadius: 12 }}
+            variants={{
+              rest: {
+                borderColor: LINE,
+                boxShadow: '0 2px 0 rgba(31, 42, 68, 0.1), 0 12px 24px -14px rgba(60, 40, 20, 0.35)',
+              },
+              traced: {
+                borderColor: TERRACOTTA,
+                boxShadow: `0 2px 0 ${TERRACOTTA_DARK}, 0 14px 24px -14px rgba(120, 70, 40, 0.5)`,
+              },
+              hover: {
+                borderColor: LINE_HOVER,
+                boxShadow: '0 4px 0 rgba(31, 42, 68, 0.14), 0 16px 26px -14px rgba(60, 40, 20, 0.42)',
+              },
+            }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
+          >
             <motion.span
               className="flex flex-none items-center justify-center"
               style={{ width: 40, height: 40, borderRadius: 9 }}
@@ -323,6 +316,19 @@ function Trail({ t, trail }: { t: number; trail: TrailData }) {
                 {trail.firstStep}
               </div>
             </div>
+          </motion.div>
+            {/* the port the thread plugs in to (TraceLayer fills it in terracotta) */}
+            <span
+              className="absolute"
+              style={{
+                left: STEP.w / 2 - 4,
+                top: -3,
+                width: 8,
+                height: 8,
+                background: CARD,
+                border: '1px solid rgba(31, 42, 68, 0.38)',
+              }}
+            />
           </motion.div>
         </motion.div>
       </motion.div>

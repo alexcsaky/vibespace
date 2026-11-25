@@ -68,7 +68,7 @@ function Stamp() {
       <g filter="url(#stamp-worn)" fill="none" stroke={STAMP_INK}>
         <rect x="4" y="4" width="242" height="112" rx="13" strokeWidth="4.5" />
         <rect x="12.5" y="12.5" width="225" height="95" rx="7" strokeWidth="1.6" />
-        <path d="M32 28 H 76 M176 28 H 220" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M32 28 H 82 M170 28 H 220" strokeWidth="1.6" strokeLinecap="round" />
         <path d="M32 85 H 56 M197 85 H 221" strokeWidth="2.4" strokeLinecap="round" />
         <g
           stroke="none"
@@ -76,7 +76,13 @@ function Stamp() {
           textAnchor="middle"
           style={{ fontFamily: "'Pixelify Sans', 'Nunito', sans-serif", fontWeight: 700 }}
         >
-          <text x="127" y="32.4" fontSize="13" style={{ letterSpacing: '0.2em' }}>
+          {/* The small line stays in Nunito: at this size the pixel C closes up once rotated and worn. */}
+          <text
+            x="127"
+            y="31.8"
+            fontSize="10.5"
+            style={{ fontFamily: "'Nunito', system-ui, sans-serif", fontWeight: 800, letterSpacing: '0.3em' }}
+          >
             INK CHECK
           </text>
           <text x="126.5" y="64" fontSize="27" style={{ letterSpacing: '0.07em' }}>
@@ -110,6 +116,7 @@ export function InkCheck() {
   const checking = state.check === 'checking'
   const human = state.check === 'human'
   const [note, setNote] = useState(false)
+  const [hover, setHover] = useState(false)
 
   const latest = useRef(state)
   latest.current = state
@@ -151,6 +158,8 @@ export function InkCheck() {
   const tracing = state.trace !== null
   /** Not clickable: mid-check, already confirmed, or looking at the path. */
   const locked = checking || human || inPath
+  /** Hover is tracked by hand so the lift can never stick once the button locks mid-hover. */
+  const lift = hover && !locked
 
   return (
     <>
@@ -235,6 +244,8 @@ export function InkCheck() {
           // aria-disabled, not disabled: a disabled button swallows pointerleave and the hover lift would stick.
           aria-disabled={locked}
           tabIndex={locked ? -1 : 0}
+          onPointerEnter={() => setHover(true)}
+          onPointerLeave={() => setHover(false)}
           className="btn relative overflow-hidden"
           style={{
             width: 150,
@@ -245,14 +256,15 @@ export function InkCheck() {
           }}
           initial={false}
           animate={{
-            y: 0,
+            y: lift ? -1 : 0,
             backgroundColor: human ? SAGE_FILL : '#FFFDF8',
-            borderColor: human ? SAGE_LINE : 'rgba(31, 42, 68, 0.14)',
-            boxShadow: human ? '0 2px 0 rgba(102, 125, 87, 0.22)' : '0 2px 0 rgba(31, 42, 68, 0.12)',
+            borderColor: human ? SAGE_LINE : lift ? 'rgba(31, 42, 68, 0.3)' : 'rgba(31, 42, 68, 0.14)',
+            boxShadow: human
+              ? '0 2px 0 rgba(102, 125, 87, 0.22)'
+              : lift
+                ? '0 3px 0 rgba(31, 42, 68, 0.14)'
+                : '0 2px 0 rgba(31, 42, 68, 0.12)',
           }}
-          whileHover={
-            locked ? undefined : { y: -1, borderColor: 'rgba(31, 42, 68, 0.3)', boxShadow: '0 3px 0 rgba(31, 42, 68, 0.14)' }
-          }
           whileTap={locked ? undefined : { y: 1, boxShadow: '0 1px 0 rgba(31, 42, 68, 0.12)' }}
           transition={{ duration: 0.16, ease: 'easeOut', backgroundColor: { duration: 0.3 }, borderColor: { duration: 0.3 } }}
         >

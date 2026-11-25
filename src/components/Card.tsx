@@ -350,7 +350,7 @@ function Journal({ card }: { card: CardData }) {
   // step the writing down as the entry gets longer, so 90 words always fit
   const [font, rule] = text.length > 490 ? [16, 19] : text.length > 440 ? [17, 20] : [18, 21]
   const top = J_HEAD + 6
-  const lines = Math.floor((h - top - 4) / rule)
+  const lines = Math.floor((h - top - 12) / rule)
   return (
     <div
       className="surface"

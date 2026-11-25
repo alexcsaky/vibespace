@@ -172,7 +172,7 @@ function Stroke({
 }
 
 /** Soft paper patch so long or enlarged lines stay legible over whatever is underneath. */
-function Backing({ show }: { show: boolean }) {
+function Backing({ show, inset = '-7px -12px -8px -12px' }: { show: boolean; inset?: string }) {
   return (
     <motion.div
       aria-hidden
@@ -181,7 +181,7 @@ function Backing({ show }: { show: boolean }) {
       transition={{ duration: 0.3 }}
       style={{
         position: 'absolute',
-        inset: '-7px -12px -8px -12px',
+        inset,
         background: PAPER,
         borderRadius: '14px 18px 12px 20px / 18px 12px 20px 14px',
         boxShadow: '0 0 10px 6px rgba(250, 243, 231, 0.9)',
@@ -274,6 +274,7 @@ function PencilLines({
 
   let offset = 0
   const clickable = !!onClick && done && !struck
+  const padX = typo.long ? 26 : 12
 
   return (
     <motion.div
@@ -283,6 +284,8 @@ function PencilLines({
         height: 0,
         paddingTop: 0,
         paddingBottom: 0,
+        marginTop: 0,
+        marginBottom: 0,
         transition: {
           opacity: { duration: 0.4, ease: 'easeOut' },
           filter: { duration: 0.4 },
@@ -290,9 +293,12 @@ function PencilLines({
         },
       }}
       style={{
-        width: typo.width + 24,
-        marginLeft: (cardW - typo.width) / 2 - 12,
-        padding: '2px 12px 4px',
+        // long blocks carry a paper backing, so leave room for its soft edge inside the clip
+        width: typo.width + padX * 2,
+        marginLeft: (cardW - typo.width) / 2 - padX,
+        marginTop: typo.long ? -12 : 0,
+        marginBottom: typo.long ? -12 : 0,
+        padding: typo.long ? `14px ${padX}px 16px` : `2px ${padX}px 4px`,
         overflow: 'hidden',
         position: 'relative',
         cursor: clickable ? 'pointer' : 'default',
@@ -307,7 +313,7 @@ function PencilLines({
       }
       whileHover={clickable ? { y: -1.5, rotate: -0.4 } : undefined}
     >
-      {typo.long && <Backing show />}
+      {typo.long && <Backing show inset="7px 14px 8px 14px" />}
       <motion.div
         initial={false}
         animate={{ opacity: struck ? 0.45 : 1 }}
@@ -618,7 +624,7 @@ function InkText({
               height="8"
               viewBox="0 0 250 8"
               aria-hidden
-              style={{ display: 'block', margin: '0 auto' }}
+              style={{ display: 'block', margin: '3px auto 0' }}
             >
               <path
                 d="M3 4 C 50 1.5, 90 6.5, 130 3.5 S 215 2, 247 4.5"

@@ -13,12 +13,14 @@ Last updated: 25 Nov 2026
 
 ## In progress
 
-- Nothing.
+- Design exploration in Paper (alternative looks and affordances). Brief is in `docs/DESIGN_EXPLORATION.md`. Not started: the Paper MCP was not connected to the cloud session on 25 Nov 2026.
 
 ## Waiting on Alex
 
 - Replace every `REPLACE:` line in `src/demo.json`, and swap in his own photos if he prefers them to the Unsplash ones.
 - Check real ink of two or three lines under each card still sits clear of the cards below it, and nudge `board` positions if not.
+
+- Connect the Paper MCP (or run Claude Code locally with Paper open) so the exploration can run, and pick which looks and affordances to explore.
 
 ## Not built
 

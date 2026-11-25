@@ -42,17 +42,22 @@ export interface Slot {
 const SLOT_PATTERNS: Record<number, { dx: number; y: number; rotate: number }[]> = {
   1: [{ dx: -70, y: 130, rotate: -2 }],
   2: [
-    { dx: -182, y: 112, rotate: -2.5 },
-    { dx: 24, y: 176, rotate: 3 },
+    { dx: -178, y: 128, rotate: -2.5 },
+    { dx: 30, y: 246, rotate: 3 },
   ],
   3: [
-    { dx: -170, y: 122, rotate: -4 },
-    { dx: 30, y: 108, rotate: 3.5 },
-    { dx: -66, y: 296, rotate: -1.5 },
+    { dx: -186, y: 122, rotate: -4 },
+    { dx: 34, y: 108, rotate: 3.5 },
+    { dx: -44, y: 306, rotate: -1.5 },
   ],
 }
 
-const byTrail = (t: number) => demo.cards.filter((c) => c.trail === t)
+// Biggest card first, so the journal takes the roomy first slot of its trail.
+const area = (c: CardData) => CARD_SIZE[c.type].w * CARD_SIZE[c.type].h
+const byTrail = (t: number) => {
+  const cards = demo.cards.filter((c) => c.trail === t)
+  return cards.some((c) => c.type === 'journal') ? [...cards].sort((a, b) => area(b) - area(a)) : cards
+}
 
 /** Fixed path slot for each card id. */
 export const PATH_SLOTS: Record<string, Slot> = {}

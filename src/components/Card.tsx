@@ -161,7 +161,7 @@ function Song({ card }: { card: CardData }) {
           </div>
         ) : (
           <img
-            src="/cards/sleeve.jpg"
+            src="cards/sleeve.jpg"
             alt=""
             draggable={false}
             onError={() => setFailed(true)}

@@ -43,7 +43,7 @@ Replace these files, keeping the names. The pins are portrait, 7:8 (the current 
 | `public/cards/5.jpg` | spare |
 | `public/cards/sleeve.jpg` | cover art on the song tile (square; only the top three quarters shows) |
 
-To use a different file name or type, change that card's `src` in `src/demo.json`. The song cover path is set in `src/components/Card.tsx`.
+To use a different file name or type, change that card's `src` in `src/demo.json` (paths are relative to `public/`, with no leading slash). The song cover path is set in `src/components/Card.tsx`.
 
 ## Swap the text
 

@@ -3,7 +3,7 @@
     {
       "id": "c1",
       "type": "photo",
-      "src": "/cards/1.jpg",
+      "src": "cards/1.jpg",
       "label": "someone strong",
       "board": {
         "x": 84,
@@ -17,7 +17,7 @@
     {
       "id": "c2",
       "type": "photo",
-      "src": "/cards/2.jpg",
+      "src": "cards/2.jpg",
       "label": "someone skiing",
       "board": {
         "x": 596,
@@ -31,7 +31,7 @@
     {
       "id": "c3",
       "type": "photo",
-      "src": "/cards/3.jpg",
+      "src": "cards/3.jpg",
       "label": "someone in nature",
       "board": {
         "x": 190,
@@ -45,7 +45,7 @@
     {
       "id": "c4",
       "type": "photo",
-      "src": "/cards/4.jpg",
+      "src": "cards/4.jpg",
       "label": "spare photo",
       "board": {
         "x": 846,
@@ -59,7 +59,7 @@
     {
       "id": "c5",
       "type": "photo",
-      "src": "/cards/5.jpg",
+      "src": "cards/5.jpg",
       "label": "spare photo",
       "board": {
         "x": 822,

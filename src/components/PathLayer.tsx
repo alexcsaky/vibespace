@@ -1,13 +1,20 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useMemo } from 'react'
 import { CANVAS, CHIP, chipPos, demo, STEP, stepPos, TRAIL_NAME_Y, TRAIL_W, TRAIL_X } from '../layout'
 import { chipKey, useDemo } from '../store'
 import type { Need, TrailData } from '../types'
+import { PixelIcon } from './Pixel'
 
 const INK = '#1F2A44'
 const PENCIL = '#9A9A94'
 const SAGE = '#A8B89A'
 const TERRACOTTA = '#D98B6A'
+const TERRACOTTA_DARK = '#B9704F'
+const CARD = '#FFFDF8'
+const LINE = 'rgba(31, 42, 68, 0.14)'
+const LINE_HOVER = 'rgba(31, 42, 68, 0.5)'
+
+/** One accent per trail. */
+const ACCENTS = [SAGE, TERRACOTTA, INK]
 
 /** Choreography, in seconds after the phase changes. */
 const NAME_AT = (t: number) => 0.5 + t * 0.15
@@ -16,57 +23,19 @@ const CHIP_GAP = 0.17
 const STEP_AT = (t: number) => CHIPS_AT(t) + 4 * CHIP_GAP + 0.2
 
 const EASE = [0.22, 0.8, 0.3, 1] as const
+const CHIP_R = 10
 
-/** Small deterministic random source, so every wobble is the same on every take. */
-function rng(seed: number) {
-  let a = (seed * 2654435761) >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let x = Math.imul(a ^ (a >>> 15), 1 | a)
-    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x
-    return ((x ^ (x >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-/** A rounded box drawn by hand: sides bow a little, the end overshoots the start. */
-function handBox(w: number, h: number, seed: number, amp = 1.5) {
-  const r = rng(seed)
-  const j = (k = 1) => (r() - 0.5) * 2 * amp * k
-  const f = (n: number) => n.toFixed(1)
-  const c = 11
-  const x0 = 2
-  const y0 = 2
-  const x1 = w - 2
-  const y1 = h - 2
-  const pts = [
-    `M ${f(x0 + c + j())} ${f(y0 + j())}`,
-    `Q ${f((x0 + x1) / 2 + j(6))} ${f(y0 + j(1.4))} ${f(x1 - c + j())} ${f(y0 + j())}`,
-    `Q ${f(x1 + j(0.6))} ${f(y0 + j(0.6))} ${f(x1 + j())} ${f(y0 + c + j())}`,
-    `Q ${f(x1 + j(1.4))} ${f((y0 + y1) / 2 + j(4))} ${f(x1 + j())} ${f(y1 - c + j())}`,
-    `Q ${f(x1 + j(0.6))} ${f(y1 + j(0.6))} ${f(x1 - c + j())} ${f(y1 + j())}`,
-    `Q ${f((x0 + x1) / 2 + j(6))} ${f(y1 + j(1.4))} ${f(x0 + c + j())} ${f(y1 + j())}`,
-    `Q ${f(x0 + j(0.6))} ${f(y1 + j(0.6))} ${f(x0 + j())} ${f(y1 - c + j())}`,
-    `Q ${f(x0 + j(1.4))} ${f((y0 + y1) / 2 + j(4))} ${f(x0 + j())} ${f(y0 + c + j())}`,
-    `Q ${f(x0 + j(0.6))} ${f(y0 + j(0.6))} ${f(x0 + c + 7 + j())} ${f(y0 + 0.4 + j(0.4))}`,
-  ]
-  return pts.join(' ')
-}
-
+/**
+ * A need chip. Pencil: a dashed, see-through suggestion. Ink: a solid card
+ * with a navy line, a hard step shadow and a tick. Clicking keeps it.
+ */
 function Chip({ t, i, need, dim }: { t: number; i: number; need: Need; dim: number }) {
   const { state, act } = useDemo()
   const key = chipKey(t, need.kind)
   const inked = !!state.chips[key]
   const pos = chipPos(t, i)
-  const seed = t * 10 + i + 1
-  const { pencilPath, inkPath, tilt } = useMemo(() => {
-    const r = rng(seed * 7 + 3)
-    return {
-      pencilPath: handBox(CHIP.w, CHIP.h, seed, 1.7),
-      inkPath: handBox(CHIP.w, CHIP.h, seed + 100, 1.2),
-      tilt: (r() - 0.5) * 2.6,
-    }
-  }, [seed])
   const delay = CHIPS_AT(t) + i * CHIP_GAP
+  const rect = { x: 0.75, y: 0.75, width: CHIP.w - 1.5, height: CHIP.h - 1.5, rx: CHIP_R - 0.75 }
 
   return (
     <motion.div
@@ -77,62 +46,85 @@ function Chip({ t, i, need, dim }: { t: number; i: number; need: Need; dim: numb
       transition={{ duration: 0.45 }}
     >
       <motion.div
-        className="h-full w-full cursor-pointer select-none"
-        initial={{ opacity: 0, y: 12, rotate: tilt * 2.4, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, rotate: tilt, scale: 1 }}
+        className="group h-full w-full cursor-pointer select-none"
+        initial={{ opacity: 0, y: 12, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, delay, ease: EASE }}
         whileHover={inked ? undefined : { y: -2 }}
         onClick={() => act.inkChip(key)}
       >
         <motion.div
           className="relative h-full w-full"
-          animate={inked ? { scale: [1, 1.045, 0.995, 1], rotate: [0, -0.5, 0] } : { scale: 1 }}
+          animate={inked ? { scale: [1, 1.04, 0.995, 1] } : { scale: 1 }}
           transition={{ duration: 0.6, times: [0, 0.3, 0.7, 1], ease: 'easeOut' }}
         >
+          {/* ink: the solid card and its hard step shadow */}
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              borderRadius: CHIP_R,
+              background: CARD,
+              boxShadow: `0 2px 0 ${INK}, 0 12px 20px -14px rgba(60, 40, 20, 0.5)`,
+            }}
+            initial={false}
+            animate={{ opacity: inked ? 1 : 0 }}
+            transition={{ duration: inked ? 0.35 : 0, delay: inked ? 0.12 : 0 }}
+          />
           <svg
-            className="absolute inset-0 overflow-visible"
+            className="absolute inset-0"
             width={CHIP.w}
             height={CHIP.h}
             viewBox={`0 0 ${CHIP.w} ${CHIP.h}`}
             fill="none"
           >
-            {/* pencil: dashed, rough, tentative */}
-            <motion.path
-              d={pencilPath}
+            {/* pencil: a straight dashed outline, barely filled */}
+            <motion.rect
+              {...rect}
+              className="transition-[stroke] duration-200 group-hover:stroke-[#7d7d78]"
+              fill="rgba(255, 253, 248, 0.45)"
               stroke={PENCIL}
               strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeDasharray="7 6"
-              filter="url(#pencil-rough)"
+              strokeDasharray="5 4"
+              initial={false}
               animate={{ opacity: inked ? 0 : 1 }}
-              transition={{ duration: 0.5, delay: inked ? 0.25 : 0 }}
+              transition={{ duration: inked ? 0.3 : 0, delay: inked ? 0.2 : 0 }}
             />
-            {/* ink: one confident line, drawn in one go */}
+            {/* ink: one solid navy line, drawn round in one go */}
             {inked && (
-              <motion.path
-                d={inkPath}
+              <motion.rect
+                {...rect}
                 stroke={INK}
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                initial={{ pathLength: 0, opacity: 1 }}
+                strokeWidth={1.5}
+                initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 0.75, ease: [0.4, 0, 0.2, 1] }}
+                transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
               />
             )}
           </svg>
 
-          <div className="absolute inset-0 flex flex-col justify-center pl-[14px] pr-[10px]">
+          <div className="absolute inset-0 pl-[12px] pr-[10px] pt-[6px]">
             <motion.div
-              className="label mb-[3px]"
-              style={{ fontSize: 9 }}
+              className="flex h-[18px] items-center gap-[7px]"
               animate={{ color: inked ? INK : PENCIL }}
               initial={false}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.45 }}
             >
-              {need.kind}
+              <PixelIcon name={need.kind} size={18} />
+              <span className="label" style={{ fontSize: 11 }}>
+                {need.kind}
+              </span>
+              {inked && (
+                <motion.span
+                  className="ml-auto flex"
+                  initial={{ opacity: 0, scale: 0.2 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 520, damping: 15, delay: 0.5 }}
+                >
+                  <PixelIcon name="check" size={18} color={INK} />
+                </motion.span>
+              )}
             </motion.div>
-            <div className="relative text-[19px] leading-[1.05]">
+            <div className="relative mt-[1px] text-[19px] leading-[20px]" style={{ fontWeight: 500 }}>
               <motion.div
                 className="pencil"
                 animate={{ opacity: inked ? 0 : 1 }}
@@ -142,8 +134,7 @@ function Chip({ t, i, need, dim }: { t: number; i: number; need: Need; dim: numb
                 {need.text}
               </motion.div>
               <motion.div
-                className="ink absolute inset-0 font-semibold"
-                style={{ fontWeight: 600 }}
+                className="ink absolute inset-0"
                 initial={false}
                 animate={{
                   clipPath: inked ? 'inset(-20% -4% -20% -4%)' : 'inset(-20% 104% -20% -4%)',
@@ -160,73 +151,82 @@ function Chip({ t, i, need, dim }: { t: number; i: number; need: Need; dim: numb
   )
 }
 
-const NAME_UNDERLINES = [
-  'M4 9 C 30 3, 62 12, 96 6 S 150 4, 176 8',
-  'M5 6 C 36 11, 70 2, 104 8 S 152 9, 175 5',
-  'M4 8 C 28 4, 58 10, 92 5 S 146 10, 176 6',
-]
-const STEP_TILT = [-1.1, 0.8, -0.6]
-
 function Trail({ t, trail }: { t: number; trail: TrailData }) {
   const { state, act } = useDemo()
   const tracing = state.trace !== null
   const traced = state.trace === t
   const other = tracing && !traced
   const sp = stepPos(t)
+  const accent = ACCENTS[t % ACCENTS.length]
 
   return (
     <>
-      {/* name */}
+      {/* name: the user's ink, with a pixel label above and a straight accent bar below */}
       <motion.div
-        className="absolute select-none text-center"
+        className="absolute select-none"
         style={{ left: TRAIL_X[t] - TRAIL_W / 2, top: TRAIL_NAME_Y, width: TRAIL_W }}
         initial={false}
         animate={{ opacity: other ? 0.16 : 1 }}
         transition={{ duration: 0.45 }}
       >
         <motion.div
-          className="ink text-[46px] font-bold leading-none"
+          className="flex flex-col items-center"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: NAME_AT(t), ease: EASE }}
         >
-          {trail.name}
+          <div className="label flex items-center gap-[6px]" style={{ fontSize: 11, color: PENCIL }}>
+            <span style={{ width: 6, height: 6, background: accent }} />
+            Trail {t + 1}
+          </div>
+          <div className="ink whitespace-nowrap font-bold" style={{ fontSize: 44, lineHeight: '40px', marginTop: 2 }}>
+            {trail.name}
+          </div>
         </motion.div>
-        <svg width="180" height="14" viewBox="0 0 180 14" className="mx-auto mt-[2px] block" fill="none">
-          <motion.path
-            d={NAME_UNDERLINES[t % 3]}
-            stroke={SAGE}
-            strokeWidth={4}
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
+        <div className="mt-[7px] flex items-center justify-center gap-[3px]">
+          <motion.span
+            className="block"
+            style={{ width: 40, height: 3, background: accent, transformOrigin: '0 50%' }}
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
             transition={{
-              pathLength: { duration: 0.55, delay: NAME_AT(t) + 0.3, ease: 'easeInOut' },
+              scaleX: { duration: 0.55, delay: NAME_AT(t) + 0.3, ease: 'easeInOut' },
               opacity: { duration: 0.01, delay: NAME_AT(t) + 0.3 },
             }}
           />
-        </svg>
+          {[0, 1].map((k) => (
+            <motion.span
+              key={k}
+              className="block"
+              style={{ width: 3, height: 3, background: accent }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.01, delay: NAME_AT(t) + 0.85 + k * 0.08 }}
+            />
+          ))}
+        </div>
       </motion.div>
 
-      {/* footpath: a faint dotted pencil line down the gap to the first step */}
+      {/* footpath: a faint row of pixel dots down the gap to the first step */}
       <motion.svg
         className="pointer-events-none absolute left-0 top-0"
         width={CANVAS.w}
         height={CANVAS.h}
         fill="none"
+        shapeRendering="crispEdges"
         initial={false}
         animate={{ opacity: tracing ? 0 : 1 }}
         transition={{ duration: 0.3 }}
       >
-        <motion.path
-          d={`M ${TRAIL_X[t]} ${CHIP.top - 8} C ${TRAIL_X[t] - 3} ${CHIP.top + 50}, ${TRAIL_X[t] + 3} ${
-            CHIP.top + 110
-          }, ${TRAIL_X[t]} ${STEP.top - 10}`}
+        <motion.line
+          x1={TRAIL_X[t]}
+          x2={TRAIL_X[t]}
+          y1={CHIP.top - 8}
+          y2={STEP.top - 10}
           stroke={PENCIL}
-          strokeOpacity={0.6}
+          strokeOpacity={0.5}
           strokeWidth={2}
-          strokeLinecap="round"
-          strokeDasharray="0.1 9"
+          strokeDasharray="2 6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: CHIPS_AT(t) + 0.2 }}
@@ -238,7 +238,7 @@ function Trail({ t, trail }: { t: number; trail: TrailData }) {
         <Chip key={need.kind} t={t} i={i} need={need} dim={other ? 0.16 : traced ? 0.3 : 1} />
       ))}
 
-      {/* first step: a strip of paper pinned to the page */}
+      {/* first step: a task card. Clicking it traces the thread back to the cards. */}
       <motion.div
         className="absolute"
         style={{ left: sp.x, top: sp.y, width: STEP.w, height: STEP.h }}
@@ -248,41 +248,80 @@ function Trail({ t, trail }: { t: number; trail: TrailData }) {
       >
         <motion.div
           className="h-full w-full"
-          initial={{ opacity: 0, y: 18, rotate: STEP_TILT[t % 3] * 2.5 }}
-          animate={{ opacity: 1, y: 0, rotate: STEP_TILT[t % 3] }}
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: STEP_AT(t), ease: EASE }}
         >
           <motion.div
-            className="relative flex h-full w-full cursor-pointer select-none flex-col items-center justify-center px-6 pt-[10px] text-center"
-            style={{
-              background: '#FFFDF8',
-              borderRadius: '3px 4px 3px 5px',
+            className="surface relative flex h-full w-full cursor-pointer select-none items-center gap-[14px] pl-[16px] pr-[18px]"
+            style={{ borderRadius: 12 }}
+            initial={false}
+            animate={{
+              y: 0,
+              borderColor: traced ? TERRACOTTA : LINE,
               boxShadow: traced
-                ? '0 1px 1px rgba(90,60,30,0.14), 0 16px 22px -10px rgba(90,60,30,0.42)'
-                : '0 1px 1px rgba(90,60,30,0.14), 0 9px 16px -9px rgba(90,60,30,0.38)',
+                ? `0 2px 0 ${TERRACOTTA_DARK}, 0 14px 24px -14px rgba(120, 70, 40, 0.5)`
+                : '0 2px 0 rgba(31, 42, 68, 0.1), 0 12px 24px -14px rgba(60, 40, 20, 0.35)',
             }}
-            animate={{ y: traced ? -3 : 0 }}
-            whileHover={{ y: -5, rotate: -0.4 }}
-            whileTap={{ y: -1 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+            whileHover={
+              traced
+                ? undefined
+                : {
+                    y: -2,
+                    borderColor: LINE_HOVER,
+                    boxShadow: '0 4px 0 rgba(31, 42, 68, 0.14), 0 16px 26px -14px rgba(60, 40, 20, 0.42)',
+                  }
+            }
+            whileTap={traced ? undefined : { y: 0 }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
             onClick={() => act.toggleTrace(t)}
           >
-            {/* the pin the thread ties on to */}
-            <svg
-              className="absolute left-1/2 top-[-4px] -translate-x-1/2 overflow-visible"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
+            {/* the port the thread plugs in to */}
+            <span
+              className="absolute"
+              style={{
+                left: STEP.w / 2 - 1.5 - 4,
+                top: -1.5 - 4,
+                width: 8,
+                height: 8,
+                background: CARD,
+                border: '1.5px solid rgba(31, 42, 68, 0.32)',
+              }}
+            />
+            <motion.span
+              className="flex flex-none items-center justify-center"
+              style={{ width: 40, height: 40, borderRadius: 9 }}
+              initial={false}
+              animate={{
+                backgroundColor: traced ? TERRACOTTA : 'rgba(217, 139, 106, 0.17)',
+                color: traced ? CARD : TERRACOTTA_DARK,
+              }}
+              transition={{ duration: 0.25 }}
             >
-              <ellipse cx="10.5" cy="11.5" rx="5" ry="4" fill="rgba(90,60,30,0.22)" />
-              <circle cx="9" cy="8" r="5" fill={TERRACOTTA} stroke="#B9704F" strokeWidth="1.2" />
-              <circle cx="7.4" cy="6.4" r="1.3" fill="#F0B79C" />
-            </svg>
-            <div className="label mb-[5px]" style={{ color: TERRACOTTA }}>
-              First step
-            </div>
-            <div className="ink text-[28px] font-semibold leading-[0.98]" style={{ textWrap: 'balance' }}>
-              {trail.firstStep}
+              <PixelIcon name="flag" size={18} />
+            </motion.span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="label" style={{ fontSize: 11, color: TERRACOTTA_DARK }}>
+                  First step
+                </span>
+                <motion.span
+                  className="label flex items-center gap-[5px]"
+                  style={{ fontSize: 10 }}
+                  initial={false}
+                  animate={{ color: traced ? TERRACOTTA_DARK : PENCIL }}
+                  transition={{ duration: 0.25 }}
+                >
+                  {traced ? 'Tracing' : 'Trace'}
+                  <PixelIcon name="arrow" size={9} className="-rotate-90" />
+                </motion.span>
+              </div>
+              <div
+                className="ink mt-[5px] text-[27px] font-semibold leading-[26px]"
+                style={{ textWrap: 'balance' }}
+              >
+                {trail.firstStep}
+              </div>
             </div>
           </motion.div>
         </motion.div>
